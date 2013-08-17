@@ -84,7 +84,7 @@ def fn_partition(fn, np):
   return func_loaders
 
 #def expd_f_lst(fns):
-def fs_ld_lines(fn, displs, st, en):
+def fs_ld_lines(fns, displs, st, en):
   '''
   Load lines of files between st and en(offset), file_sz is seperated by displs
  
@@ -95,7 +95,7 @@ def fs_ld_lines(fn, displs, st, en):
 
   Parameters
   ----------
-  fn : filename
+  fns : file list
   displs : seperate files by sz
   st : start offset
   en : end offset
@@ -106,25 +106,51 @@ def fs_ld_lines(fn, displs, st, en):
 
   Examples
   --------
-  >>> lines = f_ld_lines(fn, st, en)
+  >>> fn = ['a.txt', 'b.txt']
+  >>> displs = [0, 34, 65]
+  >>> lines = fs_ld_lines(fn, 32, 48)
   >>> for line in lines:
   >>>   print line
   '''
-  for f in xrange():
+  import sys
+  try:
+    en >= st
+  except:
+    print 'error in fs_ld_lines with en < st'
+    sys.exit(1)
   
+  # to locate files index to load from
+  fst = 0
+  fen = 0
+  for i in xrange(len(fns)):
+    if st >= displs[i]:
+      fst = i
+    if en > displs[i + 1]:
+      fen = i + 1 
+  flag = False
+  # load from files
+  for fi in xrange(fst, fen + 1):
+    if flag:
+      offset = 0
+    else:
+      offset = st - displs[fi]
+    f = open(fns[fi], 'rb')
+    if offset:
+      f.seek(offset - 1)
+      l = f.readline()
+      offset += len(l) - 1
+    if fi == fen:
+      while offset + displs[fi] < en:
+        l = f.readline()
+        offset += len(l)
+        yield l
+    else:
+      flag = True
+      while True:
+        l = f.readline()
+        if not l: break
+        yield l 
   
-  f = open(fn, 'rb')
-  offset = st
-  if offset:
-    f.seek(offset - 1)
-    l = f.readline()
-    # add edge offset. if no edge, add 1:'\n'
-    offset += len(l) - 1
-  while offset < en:
-    l = f.readline()
-    offset += len(l)
-    yield l
-
 def fns_partition(fns, np):
   '''
   Patition files in np blocks/chunks
@@ -170,12 +196,16 @@ def fns_partition(fns, np):
       e = sz
     else:
       e = (i + 1) * bk_sz
-    func_loaders.append(functools.partial(fs_ld_lines, fn, displs, s, e))
+    func_loaders.append(functools.partial(fs_ld_lines, fns, displs, s, e))
   return func_loaders
 
 if __name__ == '__main__':
-  fns = ['a.txt', 'b.txt'] 
-  loads = fns_partition(fns, 2)
+  fns2 = ['a.txt', 'b.txt']
+  #lines = fs_ld_lines(fns2, [0, 34, 65], 0, 16)
+  #for line in lines:
+  #  print line
+  #fns = ['a.txt', 'b.txt'] 
+  loads = fns_partition(fns2, 8)
   #loads = fn_partition('test.txt', 4)
   for it in loads:
     lines = it()
