@@ -61,7 +61,6 @@ def fn_partition(fn, np):
   >>> loads = fn_partition('demo.txt', 8)
   >>> for it in loads:
   >>>   lines = it()
-  >>>   # it is the return of function fd_ld_lines
   >>>   for line in lines:
   >>>     print line
   >>>   print '----'
@@ -106,9 +105,9 @@ def fs_ld_lines(fns, displs, st, en):
 
   Examples
   --------
-  >>> fn = ['a.txt', 'b.txt']
+  >>> fns = ['a.txt', 'b.txt']
   >>> displs = [0, 34, 65]
-  >>> lines = fs_ld_lines(fn, 32, 48)
+  >>> lines = fs_ld_lines(fns, 32, 48)
   >>> for line in lines:
   >>>   print line
   '''
@@ -200,12 +199,13 @@ def fns_partition(fns, np):
   return func_loaders
 
 if __name__ == '__main__':
+  #fns2 = ['a1.txt', 'a2.txt', 'a3.txt']
   fns2 = ['a.txt', 'b.txt']
   #lines = fs_ld_lines(fns2, [0, 34, 65], 0, 16)
   #for line in lines:
   #  print line
   #fns = ['a.txt', 'b.txt'] 
-  loads = fns_partition(fns2, 8)
+  loads = fns_partition(fns2, 1)
   #loads = fn_partition('test.txt', 4)
   for it in loads:
     lines = it()
