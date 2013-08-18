@@ -36,6 +36,7 @@ def scheduler_load(comm, loads, host = 0):
   --------
   >>> comm = MPI.COMM_WORLD
   >>> rank = comm.Get_rank()
+  >>> sz = comm.Get_rank()
   >>> from load import fns_partition
   >>> loads = fns_partition(['a.txt'], sz)
   >>> lst = scheduler_load(comm, loads)
