@@ -180,6 +180,10 @@ def fns_partition(fns, np):
   >>>     print line
   >>>   print '----'
   '''
+  # default nbk = np * BLK_SZ = np * 8
+  from np_scheduler import BLK_SZ
+  np = np * BLK_SZ
+  
   func_loaders = []
   displs = [0] * (len(fns) + 1)
   import os
@@ -200,7 +204,7 @@ def fns_partition(fns, np):
 
 if __name__ == '__main__':
   #fns2 = ['a1.txt', 'a2.txt', 'a3.txt']
-  fns2 = ['a.txt', 'b.txt']
+  #fns2 = ['a.txt', 'b.txt']
   #lines = fs_ld_lines(fns2, [0, 34, 65], 0, 16)
   #for line in lines:
   #  print line
