@@ -47,7 +47,11 @@ def scheduler_load(comm, loads, host = 0):
   rank = comm.Get_rank()
   size = comm.Get_size()
   cnt = BLK_SZ - 1
- 
+  cntcontrol = BLK_SZ
+  ntasks = size * BLK_SZ
+  bnd = ntasks + size - 2
+  flag = 0
+
   if rank == host:
     # load tasks [0,BLK_SZ-1]
     for i in xrange(BLK_SZ):
@@ -55,23 +59,34 @@ def scheduler_load(comm, loads, host = 0):
       for line in lines:
          ret.append(line)
   if rank != host:
-    for i in xrange(BLK_SZ):
+    while True:
+      if flag == 1: break
+      if cnt == ntasks - 1: break
       comm.send(rank, host, 2013)
       cnt = comm.recv(source = host, tag = 2013)
+      flag = comm.recv(source = host, tag = 2013)
       #print 'rank %d received from host with cnt val %d' % (rank, cnt)
-      # loading lines
-      lines = loads[cnt]()
-      for line in lines:
-        ret.append(line)
+      if flag == 0:
+        # loading lines
+        lines = loads[cnt]()
+        for line in lines:
+          ret.append(line)
   else:
-    while cnt < (BLK_SZ * size - 1):
+    while cntcontrol < bnd:
+      cntcontrol += 1
       global mutex
       mutex.acquire()
       stat = MPI.Status()
       tmp = comm.recv(source = MPI.ANY_SOURCE, tag = MPI.ANY_TAG, status = stat)
-      cnt += 1
+      if flag == 0:
+        cnt += 1
       src = stat.Get_source()
       comm.send(cnt, src, 2013)
+      if cnt == ntasks - 1 and flag == 0:
+        comm.send(flag, src, 2013)
+        flag = 1
+      else:
+        comm.send(flag, src, 2013)
       mutex.release()
   return ret
 

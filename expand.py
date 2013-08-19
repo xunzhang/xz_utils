@@ -30,7 +30,7 @@ def expd_f_lst(fns):
   -------
   a list of file names
   '''
-  import sys
+  import glob
   import types
   flst = [] 
   # expect a list contains files and dirs
@@ -47,6 +47,6 @@ def expd_f_lst(fns):
   # a dir
   elif os.path.isdir(fns):
     return _expd_dir_rec(fns)
+  # such as '/home/wuhong/*.csv'
   else:
-    print 'error in expd_f_lst function.'
-    sys.exit(1) 
+    return glob.glob(fns)
