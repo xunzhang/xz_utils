@@ -9,7 +9,7 @@ def hashfoo(i, j, npx, npy):
   '''
   return (i % npx) * npy + j % npy
 
-def putlines(lines, np, hashfunc = hashfoo):
+def putlines(lines, np, fmt = 'usr', hashfunc = hashfoo):
   '''
   Put lines to lineslotslst
     
@@ -27,9 +27,21 @@ def putlines(lines, np, hashfunc = hashfoo):
   npx, npy = npfact2D(np)
   lineslotslst = [[] for i in xrange(np)]
   for line in lines:
-    stf = [int(l) for l in line.strip('\n').split('\t')]
-    tpl = (stf[0], stf[1], stf[2])
-    lineslotslst[hashfunc(stf[0], stf[1], npx, npy)].append(tpl)
+    stf = []
+    if fmt == 'usr':
+      stf = [int(l) for l in line.strip('\n').split('\t')]
+    if fmt == 'ussrt':
+      l = line.strip('\n').split('\t')
+      #for l in line.strip('\n').split('\t'):
+      if l[2] == 'P':
+        if l[3] == 'NULL' or l[3] == '':
+          # 3.7 is avg rating
+          stf = [int(l[0]), int(l[1]), 3.7]
+        else:
+          stf = [int(l[0]), int(l[1]), int(l[3])]
+    if stf:
+      tpl = (stf[0], stf[1], stf[2])
+      lineslotslst[hashfunc(stf[0], stf[1], npx, npy)].append(tpl)
   return lineslotslst
 
 if __name__ == '__main__':
