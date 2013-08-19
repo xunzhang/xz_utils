@@ -75,6 +75,31 @@ def scheduler_load(comm, loads, host = 0):
       mutex.release()
   return ret
 
+def exchange(slotslst, comm):
+  '''
+  Exchange stuff and get relevant block stuff
+  
+  Note
+  ----
+  len(slotslst) must be equal to number of procs
+  
+  Parameters
+  ----------
+  slotslst : a list of list, generated from putlines function in hashtransfer.py
+  comm : communicator scope
+   
+  Return
+  ------
+  list of (i, j, v) entites relevant block matrix
+  
+  '''
+  recvobj = comm.alltoall(slotslst)
+  stf = []
+  for item in recvobj:
+    stf += item
+  return stf
+  #ret = comm.allgather(stf, slotslst)
+  
 if __name__ == '__main__':
   comm = MPI.COMM_WORLD
   from load import fns_partition
@@ -85,3 +110,12 @@ if __name__ == '__main__':
   aa = scheduler_load(comm, loads)
   if rank == 0:
     print aa
+  ll = [[], [], [], []]
+  # example for exchange function with np = 4
+  if rank == 0:
+    ll = [[(1, 1, 1) ,(2, 2, 2)], [(3, 3, 3)], [], [(4, 4, 4), (5, 5, 5),
+(6, 6, 6)]]
+  if rank == 1:
+    ll = [[(7, 7, 7)], [(8, 8, 8), (9, 9, 9)], [(10, 10, 10), (11, 11, 11),
+(12, 12, 12)], []]
+  print exchange(ll, comm)
