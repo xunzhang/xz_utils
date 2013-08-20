@@ -6,13 +6,14 @@
 import numpy as np
 from scipy.sparse import coo_matrix
 
-def ge_blkmtx(fl, comm):
+def ge_blkmtx(fl, comm, fmt = 'ussrt'):
   '''
   Parallel loading lines from fl and generate block matrix
 
   Parameters
   ----------
   fl : file ident
+  fmt : file format
   comm : communication scope
   
   Returns
@@ -49,7 +50,7 @@ def ge_blkmtx(fl, comm):
   # parallel loading lines
   lines = scheduler_load(comm, loads)
   # hash lines into slotslt
-  slotslst = putlines(lines, sz)
+  slotslst = putlines(lines, sz, fmt)
   # alltoall exchange, get desirable lines
   slotslst = exchange(slotslst, comm)
   # mapping inds to ids and get rmap, cmap, new slotslst((rid, cid, val)s)
