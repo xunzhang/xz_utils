@@ -45,16 +45,31 @@ def ge_blkmtx(fl, comm, fmt = 'ussrt'):
   fns = expd_f_lst(fl)
   rank = comm.Get_rank()
   sz = comm.Get_size()
+
   # generate load list
   loads = fns_partition(fns, sz)
+  print 'rank %d loads finished' % rank
+
   # parallel loading lines
   lines = scheduler_load(comm, loads)
+  print 'rank %d lines got' % rank
+
   # hash lines into slotslt
   slotslst = putlines(lines, sz, fmt)
+  print 'rank %d slotslst generated' % rank
+
+  comm.barrier()
+
   # alltoall exchange, get desirable lines
   slotslst = exchange(slotslst, comm)
+  print 'rank %d get desirable lines' % rank
+
+  comm.barrier()
+
   # mapping inds to ids and get rmap, cmap, new slotslst((rid, cid, val)s)
   rmap, cmap, slotslst = ind_mapping(slotslst, comm)
+  print 'finish ind_mapping'
+
   # generate block matrix
   mtx = coo_matrix((np.array([i[2] for i in slotslst]), (np.array([i[0] for i in slotslst]), np.array([i[1] for i in slotslst]))))
   
