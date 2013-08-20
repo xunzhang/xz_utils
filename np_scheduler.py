@@ -101,7 +101,7 @@ def exchange(slotslst, comm):
   Parameters
   ----------
   slotslst : a list of list, generated from putlines function in hashtransfer.py
-  comm : communicator scope
+  comm : communication scope
    
   Return
   ------
@@ -114,7 +114,7 @@ def exchange(slotslst, comm):
     stf += item
   return stf
   #ret = comm.allgather(stf, slotslst)
-  
+
 if __name__ == '__main__':
   comm = MPI.COMM_WORLD
   from load import fns_partition
