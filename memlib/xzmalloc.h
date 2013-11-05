@@ -1,3 +1,6 @@
+#ifndef XZMALLOC_HPP
+#define XZMALLOC_HPP
+
 #include <unistd.h> //sbrk system call
 
 int init_flag = 0;
@@ -43,7 +46,10 @@ void *xzmalloc(long nbytes) {
         break; 
       }
     }
-    local_offset += local_offset->sz;
+    void *tmp = local_offset;
+    tmp += local_offset->sz;
+    local_offset = tmp;
+    //local_offset += local_offset->sz;
   } 
   if(!location) {
     sbrk(nbytes);
@@ -58,6 +64,7 @@ void *xzmalloc(long nbytes) {
   return location;
 }
 
+/*
 int main(void)
 {
   int *a;
@@ -68,3 +75,5 @@ int main(void)
   xzfree(b);
   return 0;
 }
+*/
+#endif
