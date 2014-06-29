@@ -102,10 +102,7 @@ T mean(const std::vector<T> & data,
        bool earning_flag = false, 
        bool range_flag = false) {
   if(indx == 0) {
-    return mean(data, 
-								mean_decider(data, earning_flag, range_flag), 
-								earning_flag, 
-								range_flag);
+    return mean(data, mean_decider(data, earning_flag, range_flag), earning_flag, range_flag);
   } else if(indx == 1) {
     return am(data);
   } else if(indx == 2) {
